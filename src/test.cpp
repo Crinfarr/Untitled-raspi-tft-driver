@@ -1,0 +1,51 @@
+#include <iostream>
+#include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <linux/fb.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+
+
+//defines
+#ifndef FB_DEV
+#define FB_DEV "/dev/fb1"
+#endif
+
+#define RED ((uint16_t) 0b1111100000000000)
+#define GREEN ((uint16_t) 0b0000011111100000)
+#define BLUE ((uint16_t) 0b0000000000011111)
+#define byte uint8_t
+
+using namespace std;
+int main() {
+
+    int fbdesc = open(FB_DEV, O_RDWR);
+
+    if (fbdesc >= 0) {
+        struct fb_var_screeninfo screenInfo;
+        ioctl(fbdesc, FBIOGET_VSCREENINFO, &screenInfo);
+
+        int xres = screenInfo.xres;
+        int vxres = screenInfo.xres_virtual;
+        int yres = screenInfo.yres;
+        int vyres = screenInfo.yres_virtual;
+        int pixbits = screenInfo.bits_per_pixel;
+
+        printf("Framebuffer stats:\n\twidth: %i [%i virt]\n\theight: %i [%i virt]\n\t%i bits per pixel\n\n", xres, vxres, yres, vyres, pixbits);
+
+        // fb mapping
+        int fbDataSize = (xres * yres * pixbits) / 8;
+        int fbBlocks = fbDataSize / 2;
+        printf("Mapping %iB of memory\n", fbDataSize);
+        uint16_t* fbdata = (uint16_t*)mmap(NULL, fbDataSize, PROT_READ | PROT_WRITE, MAP_SHARED, fbdesc, (off_t)0);
+        printf("Blanking display\n");
+        memset(fbdata, 0, fbDataSize);
+        for (int pix = 0; pix < fbBlocks; pix++) {
+            fbdata[pix] = (uint16_t)((pix & 0xff00) >> 8) | ((pix & 0x00ff) << 8);
+        }
+        munmap(fbdata, fbDataSize);
+        close(fbdesc);
+    }
+}
