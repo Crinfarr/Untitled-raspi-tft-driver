@@ -39,3 +39,8 @@ FBCanvas::FBCanvas(const char* fbpath) {
     // printf("Framebuffer stats:\n\tWidth: %i\n\tHeight: %i\n\tColor depth: %i\n\tBytes: %i\n\tBlocks:%i\n", width, height, colordepth, screenBytes, blockCount);
     frameBuffer = (uint16_t*)mmap(NULL, screenBytes, PROT_READ | PROT_WRITE, MAP_SHARED, framebufferDesc, (off_t)0);
 }
+//TODO: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+//void FBCanvas::drawLine(const POINT ptA, const POINT ptB)
+
+//TODO: https://www.sunshine2k.de/coding/java/TriangleRasterization/TriangleRasterization.html
+//void FBCanvas::drawTri(const POINT ptA, const POINT ptB, const POINT ptC, uint32_t color)

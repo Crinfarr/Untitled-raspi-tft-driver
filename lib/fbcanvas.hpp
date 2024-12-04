@@ -12,6 +12,10 @@
 #include <cmath>
 #include <iostream>
 #include <string.h>
+#include <array>
+#include <algorithm>
+
+#define POINT array<int, 2>
 class FBCanvas {
 protected:
     //converts from hex colors to RGB565 16-bit colors
@@ -48,6 +52,8 @@ public:
     inline void setPt(int x, int y, uint32_t color) {
         frameBuffer[(y * width) + x] = toRgb565(color);
     }
+    void drawTri(const POINT ptA, const POINT ptB, const POINT ptC, uint32_t color);//TODO
+    void drawLine(const POINT ptA, const POINT ptB, uint32_t color);//TODO
     FBCanvas(const char* fbPath);
     ~FBCanvas() {
         if (munmap(frameBuffer, screenBytes) < 0) {
